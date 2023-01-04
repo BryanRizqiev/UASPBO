@@ -6,6 +6,7 @@ package main.frame;
 
 import main.panel.PanelPendataanBarang;
 import main.panel.PanelPengadaanBarang;
+import main.panel.PanelPenjualanBarang;
 
 import java.awt.*;
 import java.sql.Connection;
@@ -59,7 +60,8 @@ public class MainUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Toko Laptop");
-        setPreferredSize(new java.awt.Dimension(800, 800));
+
+        scrollPane.setPreferredSize(new java.awt.Dimension(800, 800));
         getContentPane().add(scrollPane, java.awt.BorderLayout.CENTER);
 
         jMenu2.setText("Pendataan");
@@ -96,6 +98,11 @@ public class MainUI extends javax.swing.JFrame {
         jMenu1.add(menuPengadaan);
 
         menuPenjualan.setText("Penjualan barang");
+        menuPenjualan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPenjualanActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuPenjualan);
 
         menuRekapPengadaan.setText("Rekap pengadaan");
@@ -134,6 +141,10 @@ public class MainUI extends javax.swing.JFrame {
     private void menuPengadaanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPengadaanActionPerformed
         scrollPane.setViewportView(new PanelPengadaanBarang());
     }//GEN-LAST:event_menuPengadaanActionPerformed
+
+    private void menuPenjualanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPenjualanActionPerformed
+        scrollPane.setViewportView(new PanelPenjualanBarang());
+    }//GEN-LAST:event_menuPenjualanActionPerformed
 
     /**
      * @param args the command line arguments

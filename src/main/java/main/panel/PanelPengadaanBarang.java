@@ -46,7 +46,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         jLabel3 = new javax.swing.JLabel();
         jLabel4 = new javax.swing.JLabel();
         tfId = new javax.swing.JTextField();
-        tfHargaBeli = new javax.swing.JTextField();
+        tfHarga = new javax.swing.JTextField();
         tfKuantitas = new javax.swing.JTextField();
         btnCek = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
@@ -103,7 +103,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                                 .addGap(45, 45, 45)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tfHargaBeli, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(tfHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
                                         .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -133,7 +133,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tfHargaBeli, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -178,12 +178,15 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCekActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+        int price = Integer.parseInt(tfHarga.getText());
+        int quantity = Integer.parseInt(tfKuantitas.getText());
         try {
             conn = getConnection();
-            stmnt = conn.prepareStatement("INSERT INTO pengadaan_barang (price_in, quantity, barang_id) VALUES (?, ?, ?);");
-            stmnt.setInt(1, Integer.parseInt(tfHargaBeli.getText()));
-            stmnt.setInt(2, Integer.parseInt(tfKuantitas.getText()));
-            stmnt.setInt(3, Integer.parseInt(tfId.getText()));
+            stmnt = conn.prepareStatement("INSERT INTO pengadaan_barang (price_in, total_price, quantity, barang_id) VALUES (?, ?, ?, ?);");
+            stmnt.setInt(1, price);
+            stmnt.setInt(2, price * quantity);
+            stmnt.setInt(3, quantity);
+            stmnt.setInt(4, Integer.parseInt(tfId.getText()));
             int affected = stmnt.executeUpdate();
             if (affected < 1) {
                 JOptionPane.showMessageDialog(this, "Data tidak ter-insert");
@@ -220,7 +223,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextArea textArea1;
-    private javax.swing.JTextField tfHargaBeli;
+    private javax.swing.JTextField tfHarga;
     private javax.swing.JTextField tfId;
     private javax.swing.JTextField tfKuantitas;
     // End of variables declaration//GEN-END:variables

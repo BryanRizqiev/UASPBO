@@ -80,13 +80,25 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         jLabel4.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel4.setText("Tipe dan varian :");
 
+        tfId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfIdKeyPressed(evt);
+            }
+        });
+
         tfMerek.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfMerekKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tfMerekKeyTyped(evt);
             }
         });
 
         tfTipenVarian.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfTipenVarianKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tfTipenVarianKeyTyped(evt);
             }
@@ -120,6 +132,9 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         jLabel6.setText("Warna : ");
 
         tfWarna.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfWarnaKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tfWarnaKeyTyped(evt);
             }
@@ -129,6 +144,9 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         jLabel7.setText("Harga jual :");
 
         tfHarga.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                tfHargaKeyPressed(evt);
+            }
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 tfHargaKeyTyped(evt);
             }
@@ -266,7 +284,6 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void combBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_combBox1ActionPerformed
-
         if (combBox1.getSelectedItem().equals("Cari")) {
 
             if (tfId.getText().isEmpty()) {
@@ -327,6 +344,54 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
     private void tfHargaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfHargaKeyTyped
         // TODO add your handling code here:
     }//GEN-LAST:event_tfHargaKeyTyped
+
+    private void tfMerekKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMerekKeyPressed
+        if (evt.getKeyChar() == '\n') {
+            tfTipenVarian.requestFocus();
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_UP) {
+            tfId.requestFocus();
+        } else if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            tfTipenVarian.requestFocus();
+        }
+    }//GEN-LAST:event_tfMerekKeyPressed
+
+    private void tfIdKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfIdKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            tfMerek.requestFocus();
+        }
+    }//GEN-LAST:event_tfIdKeyPressed
+
+    private void tfTipenVarianKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfTipenVarianKeyPressed
+        if (evt.getKeyChar() == '\n') {
+            tfWarna.requestFocus();
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_UP) {
+            tfMerek.requestFocus();
+        } else if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            tfWarna.requestFocus();
+        }
+    }//GEN-LAST:event_tfTipenVarianKeyPressed
+
+    private void tfWarnaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfWarnaKeyPressed
+        if (evt.getKeyChar() == '\n') {
+            tfHarga.requestFocus();
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_UP) {
+            tfTipenVarian.requestFocus();
+        } else if (evt.getKeyCode() == KeyEvent.VK_DOWN) {
+            tfHarga.requestFocus();
+        }
+    }//GEN-LAST:event_tfWarnaKeyPressed
+
+    private void tfHargaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfHargaKeyPressed
+        if (evt.getKeyChar() == '\n') {
+            btnSimpanActionPerformed(null);
+        }
+        if (evt.getKeyCode() == KeyEvent.VK_UP) {
+            tfWarna.requestFocus();
+        }
+    }//GEN-LAST:event_tfHargaKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
