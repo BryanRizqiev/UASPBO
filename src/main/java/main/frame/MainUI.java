@@ -19,15 +19,6 @@ import java.sql.SQLException;
  */
 public class MainUI extends javax.swing.JFrame {
 
-    private static Connection getConnection() throws SQLException {
-        String hostNPort = "103.171.85.233:3306";
-        String database = "PboDB";
-        String user = "strukdat";
-        String password = "Passwordegan**1234";
-
-        return DriverManager.getConnection("jdbc:mysql://" + hostNPort + "/" + database + "?useSSL=false", user, password);
-    }
-
     /**
      * Creates new form MainUI
      */
@@ -66,7 +57,7 @@ public class MainUI extends javax.swing.JFrame {
 
         jMenu2.setText("Pendataan");
 
-        menuBarang.setText("Barang");
+        menuBarang.setText("Produk");
         menuBarang.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuBarangActionPerformed(evt);

@@ -4,7 +4,10 @@
  */
 package main.panel;
 
+import main.utility.JDBCUtil;
+
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.sql.*;
 
 /**
@@ -15,15 +18,6 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
 
     private Connection conn;
     private PreparedStatement stmnt;
-
-    private Connection getConnection() throws SQLException {
-        String hostNPort = "103.171.85.233:3306";
-        String database = "PboDB";
-        String user = "strukdat";
-        String password = "Passwordegan**1234";
-
-        return DriverManager.getConnection("jdbc:mysql://" + hostNPort + "/" + database + "?useSSL=false", user, password);
-    }
 
     /**
      * Creates new form PanelPengadaanBarang
@@ -57,7 +51,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel1.setText("Pengadaan Barang");
 
-        jLabel2.setText("Id barang :");
+        jLabel2.setText("Id produk :");
 
         jLabel3.setText("Harga beli :");
 
@@ -93,29 +87,29 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(btnSimpan)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel4)
-                                    .addComponent(jLabel3))
-                                .addGap(45, 45, 45)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tfHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnCek)))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 40, Short.MAX_VALUE)
-                                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addComponent(btnSimpan))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(295, 295, 295)
-                        .addComponent(jLabel1)))
+                        .addGap(300, 300, 300)
+                        .addComponent(jLabel1))
+                    .addGroup(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel4))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnCek))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(tfHarga, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(87, 87, 87))
         );
         layout.setVerticalGroup(
@@ -138,7 +132,8 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(14, 14, 14))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
                 .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -153,7 +148,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         }
 
         try {
-            conn = getConnection();
+            conn = JDBCUtil.getConnection();
             stmnt = conn.prepareStatement("SELECT * FROM barang WHERE id = ?;");
             stmnt.setInt(1, Integer.parseInt(tfId.getText()));
             ResultSet rs = stmnt.executeQuery();
@@ -162,7 +157,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                 String data = "\n Merek\t: " + rs.getString("brand") +
                         "\n Tipe & varian\t: " + rs.getString("type_and_variant") +
                         "\n Warna\t: " + rs.getString("color") +
-                        "\n Stok\t: " + rs.getInt("stock") +
+                        "\n Stok produk\t: " + rs.getInt("stock") +
                         "\n Harga jual\t: " + (rs.getInt("price_out") * 1000);
                 textArea1.setText(data);
             } else {
@@ -181,12 +176,13 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         int price = Integer.parseInt(tfHarga.getText());
         int quantity = Integer.parseInt(tfKuantitas.getText());
         try {
-            conn = getConnection();
-            stmnt = conn.prepareStatement("INSERT INTO pengadaan_barang (price_in, total_price, quantity, barang_id) VALUES (?, ?, ?, ?);");
+            conn = JDBCUtil.getConnection();
+            stmnt = conn.prepareStatement("INSERT INTO pengadaan_barang (price_in, total_price, quantity_in, quantity_decrement, barang_id) VALUES (?, ?, ?, ?, ?);");
             stmnt.setInt(1, price);
             stmnt.setInt(2, price * quantity);
             stmnt.setInt(3, quantity);
-            stmnt.setInt(4, Integer.parseInt(tfId.getText()));
+            stmnt.setInt(4, quantity);
+            stmnt.setInt(5, Integer.parseInt(tfId.getText()));
             int affected = stmnt.executeUpdate();
             if (affected < 1) {
                 JOptionPane.showMessageDialog(this, "Data tidak ter-insert");

@@ -4,7 +4,10 @@
  */
 package main.panel;
 
+import main.utility.JDBCUtil;
+
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 
@@ -16,23 +19,13 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
     private Connection conn;
     private PreparedStatement stmnt;
-    private int price;
-    // tambahkan quantity masuk, dan quantity decrement di tabel pengadaan
+    private int id, price;
     private final String GET_BARANG_AND_PENGADAAN_BARANG =
-            "SELECT brg.brand, brg.type_and_variant, brg.color, brg.stock, brg.price_out " +
+            "SELECT brg.brand, brg.type_and_variant, brg.color, brg.price_out, pngdn_brg.quantity_decrement AS stock, pngdn_brg.id AS id " +
             "FROM pengadaan_barang pngdn_brg " +
             "INNER JOIN barang brg " +
             "ON pngdn_brg.barang_id = brg.id " +
             "WHERE pngdn_brg.id = ?;";
-
-    private Connection getConnection() throws SQLException {
-        String hostNPort = "103.171.85.233:3306";
-        String database = "PboDB";
-        String user = "strukdat";
-        String password = "Passwordegan**1234";
-
-        return DriverManager.getConnection("jdbc:mysql://" + hostNPort + "/" + database + "?useSSL=false", user, password);
-    }
 
     /**
      * Creates new form PanelPenjualanBarang
@@ -157,7 +150,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                         .addComponent(tfKembalian, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
                         .addComponent(tfUangPelanggan, javax.swing.GroupLayout.Alignment.LEADING)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(52, 52, 52))
             .addGroup(layout.createSequentialGroup()
@@ -170,7 +163,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                         .addComponent(btnSimpan)
                         .addGap(18, 18, 18)
                         .addComponent(btnReset)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(250, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -216,19 +209,22 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
 
         try {
-            conn = getConnection();
+            conn = JDBCUtil.getConnection();
             stmnt = conn.prepareStatement(GET_BARANG_AND_PENGADAAN_BARANG);
             stmnt.setInt(1, Integer.parseInt(tfId.getText()));
             ResultSet rs = stmnt.executeQuery();
 
             if (rs.next()) {
+                id = rs.getInt("id");
+                price = rs.getInt("price_out");
+                int stock = rs.getInt("stock");
+                String status = (stock< 1) ? "Barang dengan id " + id + " tidak tersedia" : "Barang dengan id " + id + "\n \t  tersedia sebanyak "  + stock + " barang";
                 String data = "\n Merek\t: " + rs.getString("brand") +
                         "\n Tipe & varian\t: " + rs.getString("type_and_variant") +
                         "\n Warna\t: " + rs.getString("color") +
-                        "\n Stok\t: " + rs.getInt("stock") +
-                        "\n Harga jual\t: " + (rs.getInt("price_out") * 1000);
+                        "\n Harga jual\t: " + (rs.getInt("price_out") * 1000) +
+                        "\n Status\t: " + status;
                 textArea1.setText(data);
-                price = rs.getInt("price_out");
                 tfJumlahBarang.setEditable(true);
                 tfUangPelanggan.setEditable(true);
             } else {
@@ -256,7 +252,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Harap cek barang terlebih dulu");
             return;
         }
-        System.out.println(price);
+        EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new Popup().setVisible(true);
+            }
+        });
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void tfUangPelangganKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUangPelangganKeyReleased
