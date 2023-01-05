@@ -318,12 +318,14 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
 
             String[] returned = {"id"};
             conn = JDBCUtil.getConnection();
+
             stmnt = conn.prepareStatement("INSERT INTO barang (brand, type_and_variant, color, price_out) " +
                     "VALUES (?, ?, ?, ?);", returned);
             stmnt.setString(1, brand);
             stmnt.setString(2, brand + " " + tfTipenVarian.getText());
             stmnt.setString(3, tfWarna.getText());
             stmnt.setInt(4, Integer.parseInt(tfHarga.getText()));
+
             int affected = stmnt.executeUpdate();
             if (affected < 1) {
                 JOptionPane.showMessageDialog(this, "Data tidak ter-insert");

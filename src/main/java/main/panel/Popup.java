@@ -39,6 +39,7 @@ public class Popup extends javax.swing.JFrame {
         jLabel12 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Detail penjualan");
 
         jLabel1.setText("Merek :");
 

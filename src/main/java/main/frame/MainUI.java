@@ -4,6 +4,7 @@
  */
 package main.frame;
 
+import main.panel.Karyawan_UI;
 import main.panel.PanelPendataanBarang;
 import main.panel.PanelPengadaanBarang;
 import main.panel.PanelPenjualanBarang;
@@ -118,7 +119,7 @@ public class MainUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void menuKaryawanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuKaryawanActionPerformed
-        // TODO add your handling code here:
+        scrollPane.setViewportView(new Karyawan_UI());
     }//GEN-LAST:event_menuKaryawanActionPerformed
 
     private void menuRekapPengadaanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRekapPengadaanActionPerformed
