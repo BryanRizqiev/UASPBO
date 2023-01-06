@@ -158,7 +158,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                         "\n Tipe & varian\t: " + rs.getString("type_and_variant") +
                         "\n Warna\t: " + rs.getString("color") +
                         "\n Stok produk\t: " + rs.getInt("stock") +
-                        "\n Harga jual\t: " + (rs.getInt("price_out") * 1000);
+                        "\n Harga jual\t: " + (rs.getInt("price_out"));
                 textArea1.setText(data);
             } else {
                 JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
@@ -173,11 +173,11 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCekActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
-        int price = Integer.parseInt(tfHarga.getText());
+        int price = Integer.parseInt(tfHarga.getText()) * 1000;
         int quantity = Integer.parseInt(tfKuantitas.getText());
         try {
             conn = JDBCUtil.getConnection();
-            stmnt = conn.prepareStatement("INSERT INTO pengadaan_barang (price_in, total_price, quantity_in, quantity_decrement, barang_id) VALUES (?, ?, ?, ?, ?);");
+            stmnt = conn.prepareStatement("INSERT INTO pengadaan_barang (price_in, total_price, quantity_in, stock, barang_id) VALUES (?, ?, ?, ?, ?);");
             stmnt.setInt(1, price);
             stmnt.setInt(2, price * quantity);
             stmnt.setInt(3, quantity);

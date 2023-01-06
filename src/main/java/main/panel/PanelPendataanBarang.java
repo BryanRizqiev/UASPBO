@@ -316,15 +316,18 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 return;
             }
 
+            String uniqueName = (brand + tfTipenVarian.getText() + tfWarna.getText()).toLowerCase();
+
             String[] returned = {"id"};
             conn = JDBCUtil.getConnection();
 
-            stmnt = conn.prepareStatement("INSERT INTO barang (brand, type_and_variant, color, price_out) " +
-                    "VALUES (?, ?, ?, ?);", returned);
+            stmnt = conn.prepareStatement("INSERT INTO barang (brand, unique_name, type_and_variant, color, price_out) " +
+                    "VALUES (?, ?, ?, ?, ?);", returned);
             stmnt.setString(1, brand);
-            stmnt.setString(2, brand + " " + tfTipenVarian.getText());
-            stmnt.setString(3, tfWarna.getText());
-            stmnt.setInt(4, Integer.parseInt(tfHarga.getText()));
+            stmnt.setString(2, uniqueName);
+            stmnt.setString(3, tfTipenVarian.getText());
+            stmnt.setString(4, tfWarna.getText());
+            stmnt.setInt(5, Integer.parseInt(tfHarga.getText()) * 1000);
 
             int affected = stmnt.executeUpdate();
             if (affected < 1) {
@@ -334,8 +337,10 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 if (rs.next()) {
                     // harus by column index
                     JOptionPane.showMessageDialog(this, "Data berhasil di-insert dengan id: " + rs.getInt(1));
+                    updateTable();
                 } else {
                     JOptionPane.showMessageDialog(this, "Data berhasil di-insert");
+                    updateTable();
                 }
                 rs.close();
             }
@@ -366,9 +371,7 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 if (rs.next()) {
                     labelStok.setText(String.valueOf(rs.getInt("stock")));
                     tfMerek.setText(rs.getString("brand"));
-                    String[] str = rs.getString("type_and_variant").split(" ");
-                    // ada bug
-                    tfTipenVarian.setText(str[1]);
+                    tfTipenVarian.setText(rs.getString("type_and_variant"));
                     tfWarna.setText(rs.getString("color"));
                     tfHarga.setText(String.valueOf(rs.getInt("price_out")));
                 } else {

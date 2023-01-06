@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.sql.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  *
@@ -20,9 +22,11 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
     private Connection conn;
     private PreparedStatement stmnt;
     private int price, total, totalPrice, money, back, pengadaanBarangId, karyawanId, pelangganId;
-    private String brand, typenVariant, color;
+    private String brand, typenVariant, color, namaKaryawan, namaPelanggan;
+    private Timestamp time_in, time_out;
+
     private final String GET_BARANG_AND_PENGADAAN_BARANG =
-            "SELECT brg.brand, brg.type_and_variant, brg.color, brg.price_out, pngdn_brg.quantity_decrement AS stock, pngdn_brg.id AS id " +
+            "SELECT brg.brand, brg.type_and_variant, brg.color, brg.price_out, pngdn_brg.id AS id, pngdn_brg.stock, pngdn_brg.time_in " +
             "FROM pengadaan_barang pngdn_brg " +
             "INNER JOIN barang brg " +
             "ON pngdn_brg.barang_id = brg.id " +
@@ -30,6 +34,9 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
     private final String GET_KARYAWAN_BY_ID =
             "SELECT * FROM karyawan WHERE id = ?;";
+
+    private final String GET_PELANGGAN_BY_ID =
+            "SELECT * FROM pelanggan WHERE id = ?;";
 
     /**
      * Creates new form PanelPenjualanBarang
@@ -128,12 +135,6 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         btnCekKaryawan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCekKaryawanActionPerformed(evt);
-            }
-        });
-
-        tfPelanggan.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tfPelangganActionPerformed(evt);
             }
         });
 
@@ -240,7 +241,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(23, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -257,11 +258,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             ResultSet rs = stmnt.executeQuery();
 
             if (rs.next()) {
-                price = rs.getInt("price_out") * 1000;
                 pengadaanBarangId = rs.getInt("id");
                 brand = rs.getString("brand");
                 typenVariant = rs.getString("type_and_variant");
                 color = rs.getString("color");
+                price = rs.getInt("price_out");
+                time_in = rs.getTimestamp("time_in");
 
                 int stock = rs.getInt("stock");
                 String status = (stock < 1) ? "Barang dengan id " + pengadaanBarangId + " tidak tersedia" : "Barang dengan id " + pengadaanBarangId + "\n \t  tersedia sebanyak "  + stock + " barang";
@@ -286,15 +288,93 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCekActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+        // kurang banyak validasi
+        if (tfKembalian.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Harap tekan enter pada form uang pelanggan");
+            return;
+        }
+
         if (pengadaanBarangId == 0 || karyawanId == 0 || pelangganId == 0) {
             JOptionPane.showMessageDialog(this, "Harap cek barang terlebih dulu");
             return;
         }
-//        total = Integer.parseInt(tfJumlahBarang.getText());
-//        totalPrice = total * price;
-//        money = Integer.parseInt(tfUangPelanggan.getText());
-//        back = money - totalPrice;
-        
+
+
+         int isContinue = JOptionPane.showConfirmDialog(this, "Merek\t: " + brand + "\nTipe dan varian\t: " + typenVariant + "\nKaryawan\t: " + namaKaryawan +  "\nPelanggan\t: " + namaPelanggan,
+                 "Cek lagi", JOptionPane.YES_NO_OPTION);
+
+         if (isContinue != 0) {
+             return;
+         }
+
+        System.out.println("Start sync");
+
+        CompletableFuture<Integer> futurePengadaanBarang = CompletableFuture.supplyAsync(() -> {
+            try{
+                conn = JDBCUtil.getConnection();
+                stmnt = conn.prepareStatement("UPDATE pengadaan_barang SET stock = stock - ? WHERE id = ?;");
+                stmnt.setInt(1, total);
+                stmnt.setInt(2, pengadaanBarangId);
+                int affected = stmnt.executeUpdate();
+                stmnt.close(); conn.close();
+                return affected;
+            } catch(SQLException exc) {
+                exc.printStackTrace();
+            }
+            return null;
+        });
+
+        System.out.println("End sync");
+
+        total = Integer.parseInt(tfJumlahBarang.getText());
+        totalPrice = total * price;
+        money = Integer.parseInt(tfUangPelanggan.getText());
+        back = money - totalPrice;
+
+        try {
+            conn = JDBCUtil.getConnection();
+            stmnt = conn.prepareStatement("INSERT INTO penjualan_barang (brand, type_and_variant, color, price, quantity, total_price, customer_money, change_money, time_in, " +
+                    "time_out, karyawan_name, pelanggan_name, pengadaan_barang_id, karyawan_id, pelanggan_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);");
+
+            time_out = new Timestamp(System.currentTimeMillis());
+            time_out.setHours(time_out.getHours() - 7);
+
+            stmnt.setString(1, brand);
+            stmnt.setString(2, typenVariant);
+            stmnt.setString(3, color);
+            stmnt.setInt(4, price);
+            stmnt.setInt(5, total);
+            stmnt.setInt(6, totalPrice);
+            stmnt.setInt(7, money);
+            stmnt.setInt(8, back);
+            stmnt.setTimestamp(9, time_in);
+            stmnt.setTimestamp(10, time_out);
+            stmnt.setString(11, namaKaryawan);
+            stmnt.setString(12, namaPelanggan);
+            stmnt.setInt(13, pengadaanBarangId);
+            stmnt.setInt(14, karyawanId);
+            stmnt.setInt(15, pelangganId);
+            int affected = stmnt.executeUpdate();
+            int pengadaanBarangAffected = futurePengadaanBarang.get();
+            System.out.println("Result async: " + pengadaanBarangAffected);
+
+            if (affected < 0) {
+                JOptionPane.showMessageDialog(this, "Data penjualan tidak ter-insert");
+            }
+
+
+            if (pengadaanBarangAffected < 0) {
+                JOptionPane.showMessageDialog(this, "Data pengadaan tidak ter-insert");
+            }
+
+            stmnt.close(); conn.close();
+
+        } catch (SQLException | InterruptedException | ExecutionException exc) {
+            exc.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error");
+            return;
+        }
+
         EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -316,15 +396,18 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                 return;
             }
             int money = Integer.parseInt(tfUangPelanggan.getText());
-            int back =  money - ((price * 1000) * Integer.parseInt(tfJumlahBarang.getText()));
-            if (back > 0) {
+            int back =  money - (price * Integer.parseInt(tfJumlahBarang.getText()));
+            if (back >= 0) {
                 tfKembalian.setText(String.valueOf(back));
+            } else {
+                JOptionPane.showMessageDialog(this, "Uang kurang");
+                return;
             }
         }
     }//GEN-LAST:event_tfUangPelangganKeyPressed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-        // TODO add your handling code here:
+
     }//GEN-LAST:event_btnResetActionPerformed
 
     private void btnCekKaryawanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekKaryawanActionPerformed
@@ -335,8 +418,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             ResultSet rs = stmnt.executeQuery();
 
             if (rs.next()) {
-                String data = "\n Nama\t: " +  rs.getString("nama") +
-                        "\n Jabatan\t: " + rs.getString("jabatan");
+                karyawanId = rs.getInt("id");
+                namaKaryawan = rs.getString("nama");
+                String data = "\n Nama\t: " +  namaKaryawan +
+                        "\n Jabatan\t: " + rs.getString("jabatan") +
+                        "\n Alamat\t: " + rs.getString("alamat") +
+                        "\n No. Telepon\t: " + rs.getString("no_telepon");
                 textArea1.setText(data);
             } else {
                 JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
@@ -350,12 +437,30 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnCekKaryawanActionPerformed
 
-    private void tfPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tfPelangganActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfPelangganActionPerformed
-
     private void btnCekPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekPelangganActionPerformed
-        // TODO add your handling code here:
+        try {
+            conn = JDBCUtil.getConnection();
+            stmnt = conn.prepareStatement(GET_PELANGGAN_BY_ID);
+            stmnt.setInt(1, Integer.parseInt(tfPelanggan.getText()));
+            ResultSet rs = stmnt.executeQuery();
+
+            if (rs.next()) {
+                pelangganId = rs.getInt("id");
+                namaPelanggan = rs.getString("nama");
+                String data = "\n Nama\t: " +  namaPelanggan +
+                        "\n Alamat\t: " + rs.getString("alamat") +
+                        "\n No. Telepon\t: " + rs.getString("no_telepon");
+                textArea1.setText(data);
+            } else {
+                JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
+            }
+
+            rs.close(); stmnt.close(); conn.close();
+
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error");
+        }
     }//GEN-LAST:event_btnCekPelangganActionPerformed
 
 
