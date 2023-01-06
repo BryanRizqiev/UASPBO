@@ -162,6 +162,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfId">
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfIdKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnCek">
       <Properties>
@@ -195,6 +198,9 @@
       <Properties>
         <Property name="editable" type="boolean" value="false"/>
       </Properties>
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfJumlahBarangKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel4">
       <Properties>
@@ -247,6 +253,9 @@
       </Properties>
     </Component>
     <Component class="javax.swing.JTextField" name="tfIdKaryawan">
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfIdKaryawanKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnCekKaryawan">
       <Properties>
@@ -257,6 +266,9 @@
       </Events>
     </Component>
     <Component class="javax.swing.JTextField" name="tfPelanggan">
+      <Events>
+        <EventHandler event="keyTyped" listener="java.awt.event.KeyListener" parameters="java.awt.event.KeyEvent" handler="tfPelangganKeyTyped"/>
+      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="btnCekPelanggan">
       <Properties>

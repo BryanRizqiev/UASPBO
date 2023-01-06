@@ -44,7 +44,10 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
             exc.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error");
         }
+    }
 
+    private void ShowJOptionNotInMainComponent(Object message) {
+        JOptionPane.showMessageDialog(this, message);
     }
 
     /**
@@ -84,6 +87,7 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         labelStok = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
+        btnSync = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(600, 600));
 
@@ -217,6 +221,13 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(100);
         }
 
+        btnSync.setText("Singkronkan");
+        btnSync.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSyncActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -245,7 +256,9 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                                         .addGap(18, 18, 18)
                                         .addComponent(btnUpdate)
                                         .addGap(18, 18, 18)
-                                        .addComponent(btnReset))
+                                        .addComponent(btnReset)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(btnSync))
                                     .addGroup(layout.createSequentialGroup()
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                                             .addComponent(tfHarga, javax.swing.GroupLayout.DEFAULT_SIZE, 100, Short.MAX_VALUE)
@@ -265,7 +278,7 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(246, Short.MAX_VALUE))
+                .addContainerGap(64, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -300,7 +313,8 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(btnUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnReset, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSync, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(30, 30, 30)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -462,10 +476,56 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tfHargaKeyPressed
 
+    private void btnSyncActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSyncActionPerformed
+        btnSync.setEnabled(false);
+        btnSync.setBorderPainted(false);
+        btnSync.setFocusPainted(false);
+        SwingWorker<Boolean, Boolean> worker = new SwingWorker<>() {
+            // harus di catch SQLException
+            @Override
+            protected Boolean doInBackground() throws SQLException, InterruptedException {
+                System.out.println("Lama bgt");
+                Thread.sleep(5000L);
+                conn = JDBCUtil.getConnection();
+                stmnt = conn.prepareStatement("UPDATE barang brg SET stock = " +
+                        "(SELECT SUM(stock) FROM pengadaan_barang WHERE barang_id = brg.id);");
+                int affected = stmnt.executeUpdate();
+                // kurang guna karena query atas pasti update
+                if (affected < 1) {
+                    ShowJOptionNotInMainComponent("Data tidak ada yang update");
+                }
+
+                stmnt.close(); conn.close();
+                System.out.println("Lama bgt");
+
+                return true;
+            }
+
+            @Override
+            protected void done() {
+                boolean bStatus = false;
+                try {
+                    bStatus = get();
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                    ShowJOptionNotInMainComponent("Error");
+                }
+                ShowJOptionNotInMainComponent("Data berhasil ter-update");
+                btnSync.setEnabled(true);
+                btnSync.setBorderPainted(true);
+                btnSync.setFocusPainted(true);
+                updateTable();
+            }
+        };
+
+        worker.execute();
+    }//GEN-LAST:event_btnSyncActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnSimpan;
+    private javax.swing.JButton btnSync;
     private javax.swing.JButton btnUpdate;
     private javax.swing.JComboBox<String> combBox1;
     private javax.swing.JLabel jLabel1;

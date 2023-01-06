@@ -21,7 +21,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
     private Connection conn;
     private PreparedStatement stmnt;
-    private int price, total, totalPrice, money, back, pengadaanBarangId, karyawanId, pelangganId;
+    private int price, total, totalPrice, money, back, pengadaanBarangId, karyawanId, pelangganId, pengadaanBarangStock;
     private String brand, typenVariant, color, namaKaryawan, namaPelanggan;
     private Timestamp time_in, time_out;
 
@@ -82,6 +82,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
         jLabel2.setText("Id barang :");
 
+        tfId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfIdKeyTyped(evt);
+            }
+        });
+
         btnCek.setText("Cek");
         btnCek.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -96,6 +102,11 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         jLabel3.setText("Jumlah barang :");
 
         tfJumlahBarang.setEditable(false);
+        tfJumlahBarang.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfJumlahBarangKeyTyped(evt);
+            }
+        });
 
         jLabel4.setText("Uang pelanggan :");
 
@@ -131,10 +142,22 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
         jLabel7.setText("Id pelanggan :");
 
+        tfIdKaryawan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfIdKaryawanKeyTyped(evt);
+            }
+        });
+
         btnCekKaryawan.setText("Cek");
         btnCekKaryawan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCekKaryawanActionPerformed(evt);
+            }
+        });
+
+        tfPelanggan.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfPelangganKeyTyped(evt);
             }
         });
 
@@ -245,6 +268,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         );
     }// </editor-fold>//GEN-END:initComponents
 
+    // cek barang
     private void btnCekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekActionPerformed
         if (tfId.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Form id harus diisi");
@@ -265,8 +289,8 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                 price = rs.getInt("price_out");
                 time_in = rs.getTimestamp("time_in");
 
-                int stock = rs.getInt("stock");
-                String status = (stock < 1) ? "Barang dengan id " + pengadaanBarangId + " tidak tersedia" : "Barang dengan id " + pengadaanBarangId + "\n \t  tersedia sebanyak "  + stock + " barang";
+                pengadaanBarangStock = rs.getInt("stock");
+                String status = (pengadaanBarangStock < 1) ? "Barang dengan id " + pengadaanBarangId + "\n \t  tidak tersedia" : "Barang dengan id " + pengadaanBarangId + "\n \t  tersedia sebanyak "  + pengadaanBarangStock + " barang";
                 String data = "\n Merek\t: " + brand +
                         "\n Tipe & varian\t: " + typenVariant +
                         "\n Warna\t: " + color +
@@ -287,8 +311,14 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnCekActionPerformed
 
+    // simpan
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
         // kurang banyak validasi
+        if (pengadaanBarangStock < total) {
+            JOptionPane.showMessageDialog(this, "Barang dengan id " + pengadaanBarangId  + " tidak tersedia");
+            return;
+        }
+
         if (tfKembalian.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Harap tekan enter pada form uang pelanggan");
             return;
@@ -299,13 +329,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             return;
         }
 
+        int isContinue = JOptionPane.showConfirmDialog(this, "Merek\t: " + brand + "\nTipe dan varian\t: " + typenVariant + "\nKaryawan\t: " + namaKaryawan +  "\nPelanggan\t: " + namaPelanggan,
+                "Cek lagi", JOptionPane.YES_NO_OPTION);
 
-         int isContinue = JOptionPane.showConfirmDialog(this, "Merek\t: " + brand + "\nTipe dan varian\t: " + typenVariant + "\nKaryawan\t: " + namaKaryawan +  "\nPelanggan\t: " + namaPelanggan,
-                 "Cek lagi", JOptionPane.YES_NO_OPTION);
-
-         if (isContinue != 0) {
-             return;
-         }
+        if (isContinue != 0) {
+            return;
+        }
 
         System.out.println("Start sync");
 
@@ -362,7 +391,6 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Data penjualan tidak ter-insert");
             }
 
-
             if (pengadaanBarangAffected < 0) {
                 JOptionPane.showMessageDialog(this, "Data pengadaan tidak ter-insert");
             }
@@ -389,6 +417,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tfUangPelangganKeyTyped
 
+    // form uang pelanggan enter generate kembalian
     private void tfUangPelangganKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUangPelangganKeyPressed
         if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
             if (tfJumlahBarang.getText().isEmpty()) {
@@ -406,10 +435,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tfUangPelangganKeyPressed
 
+    // reset
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
 
     }//GEN-LAST:event_btnResetActionPerformed
 
+    // cek karyawan
     private void btnCekKaryawanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekKaryawanActionPerformed
         try {
             conn = JDBCUtil.getConnection();
@@ -437,6 +468,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnCekKaryawanActionPerformed
 
+    // cek pelanggan
     private void btnCekPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekPelangganActionPerformed
         try {
             conn = JDBCUtil.getConnection();
@@ -462,6 +494,30 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Error");
         }
     }//GEN-LAST:event_btnCekPelangganActionPerformed
+
+    private void tfIdKaryawanKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfIdKaryawanKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfIdKaryawanKeyTyped
+
+    private void tfPelangganKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPelangganKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfPelangganKeyTyped
+
+    private void tfJumlahBarangKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfJumlahBarangKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfJumlahBarangKeyTyped
+
+    private void tfIdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfIdKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfIdKeyTyped
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
