@@ -53,12 +53,11 @@
         <Component class="javax.swing.JTable" name="jTable1">
           <Properties>
             <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-              <Table columnCount="7" rowCount="4">
+              <Table columnCount="6" rowCount="4">
                 <Column editable="false" title="ID" type="java.lang.String"/>
                 <Column editable="false" title="Harga Masuk" type="java.lang.String"/>
-                <Column editable="false" title="Harga Jual" type="java.lang.String"/>
+                <Column editable="false" title="Total Harga Masuk" type="java.lang.String"/>
                 <Column editable="false" title="Jumlah Barang" type="java.lang.String"/>
-                <Column editable="false" title="Stok" type="java.lang.String"/>
                 <Column editable="false" title="ID Barang" type="java.lang.String"/>
                 <Column editable="false" title="Waktu" type="java.lang.String"/>
               </Table>
@@ -81,11 +80,6 @@
                   <Renderer/>
                 </Column>
                 <Column maxWidth="-1" minWidth="-1" prefWidth="-1" resizable="true">
-                  <Title/>
-                  <Editor/>
-                  <Renderer/>
-                </Column>
-                <Column maxWidth="-1" minWidth="-1" prefWidth="50" resizable="true">
                   <Title/>
                   <Editor/>
                   <Renderer/>

@@ -181,6 +181,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
             jTable1.getColumnModel().getColumn(1).setResizable(false);
             jTable1.getColumnModel().getColumn(2).setResizable(false);
             jTable1.getColumnModel().getColumn(2).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(2).setHeaderValue("Stok");
             jTable1.getColumnModel().getColumn(3).setResizable(false);
             jTable1.getColumnModel().getColumn(3).setPreferredWidth(75);
             jTable1.getColumnModel().getColumn(4).setResizable(false);
@@ -320,6 +321,10 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
             }
 
             stmnt.close(); conn.close();
+
+            updateTable();
+
+            tfId.setText(""); tfKuantitas.setText(""); tfHarga.setText("");
         } catch (SQLException exc) {
             exc.printStackTrace();
             JOptionPane.showMessageDialog(this, "Error");

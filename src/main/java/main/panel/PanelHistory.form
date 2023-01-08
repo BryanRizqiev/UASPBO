@@ -31,13 +31,15 @@
                               <Component id="labelId" min="-2" max="-2" attributes="0"/>
                               <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
                               <Component id="txtId" min="-2" pref="90" max="-2" attributes="0"/>
+                              <EmptySpace type="separate" max="-2" attributes="0"/>
+                              <Component id="btnLihatIdPelanggan" min="-2" max="-2" attributes="0"/>
                           </Group>
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="100" max="-2" attributes="0"/>
                               <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                           </Group>
                       </Group>
-                      <EmptySpace min="0" pref="71" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="19" max="32767" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
@@ -53,6 +55,7 @@
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="labelId" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="txtId" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="btnLihatIdPelanggan" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace min="-2" pref="37" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
@@ -175,6 +178,14 @@
         </Property>
         <Property name="text" type="java.lang.String" value="History Pelanggan"/>
       </Properties>
+    </Component>
+    <Component class="javax.swing.JButton" name="btnLihatIdPelanggan">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Lihat id pelanggan?"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnLihatIdPelangganActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

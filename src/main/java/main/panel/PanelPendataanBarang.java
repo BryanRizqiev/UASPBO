@@ -556,9 +556,9 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
             @Override
             protected Boolean doInBackground() throws SQLException, InterruptedException {
                 System.out.println("Lama bgt");
-                Thread.sleep(5000L);
-                conn = JDBCUtil.getConnection();
-                stmnt = conn.prepareStatement("UPDATE barang brg SET stock = " +
+                Thread.sleep(4000L);
+                Connection conn = JDBCUtil.getConnection();
+                PreparedStatement stmnt = conn.prepareStatement("UPDATE barang brg SET stock = " +
                         "(SELECT IFNULL(SUM(stock), 0) FROM pengadaan_barang WHERE barang_id = brg.id);");
                 int affected = stmnt.executeUpdate();
                 // kurang guna karena query atas pasti update
@@ -582,8 +582,8 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                     showJOptionToInMainPanel("Error");
                 }
                 System.out.println("Is ok? " + bStatus);
-                mainFrame.showJOptionToMainFrame("Data berhasil ter-update");
-//                showJOptionToInMainPanel("Data berhasil ter-update");
+//                mainFrame.showJOptionToMainFrame("Data berhasil ter-update");
+                showJOptionToInMainPanel("Data berhasil ter-update");
                 btnSync.setEnabled(true);
                 btnSync.setBorderPainted(true);
                 btnSync.setFocusPainted(true);

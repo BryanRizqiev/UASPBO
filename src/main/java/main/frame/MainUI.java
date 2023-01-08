@@ -5,7 +5,6 @@
 package main.frame;
 
 import main.panel.*;
-import main.view.PanelHistory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +53,7 @@ public class MainUI extends javax.swing.JFrame {
         menuHistori = new javax.swing.JMenuItem();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setTitle("Toko Laptop");
+        setTitle("Toko HP");
 
         scrollPane.setPreferredSize(new java.awt.Dimension(800, 800));
         getContentPane().add(scrollPane, java.awt.BorderLayout.CENTER);
@@ -165,7 +164,7 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_menuRekapPenjualanActionPerformed
 
     private void menuHistoriActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHistoriActionPerformed
-        scrollPane.setViewportView(new PanelHistory());
+        scrollPane.setViewportView(new PanelHistory(this));
     }//GEN-LAST:event_menuHistoriActionPerformed
 
     /**

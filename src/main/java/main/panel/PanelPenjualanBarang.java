@@ -362,8 +362,8 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
         CompletableFuture<Integer> futurePengadaanBarang = CompletableFuture.supplyAsync(() -> {
             try {
-                conn = JDBCUtil.getConnection();
-                stmnt = conn.prepareStatement("UPDATE pengadaan_barang SET stock = stock - ? WHERE id = ?;");
+                Connection conn = JDBCUtil.getConnection();
+                PreparedStatement stmnt = conn.prepareStatement("UPDATE pengadaan_barang SET stock = stock - ? WHERE id = ?;");
                 stmnt.setInt(1, total);
                 stmnt.setInt(2, pengadaanBarangId);
                 int affected = stmnt.executeUpdate();
@@ -377,8 +377,8 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
         CompletableFuture<Integer> futureBarang = CompletableFuture.supplyAsync(() -> {
             try {
-                conn = JDBCUtil.getConnection();
-                stmnt = conn.prepareStatement("UPDATE barang SET stock = stock - ? WHERE id = ?;");
+                Connection conn = JDBCUtil.getConnection();
+                PreparedStatement stmnt = conn.prepareStatement("UPDATE barang SET stock = stock - ? WHERE id = ?;");
                 stmnt.setInt(1, total);
                 stmnt.setInt(2, barangId);
                 int affected = stmnt.executeUpdate();
@@ -438,6 +438,8 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Data produk tidak ter-update");
             }
 
+            JOptionPane.showMessageDialog(this, "Data penjualan sukses disimpan");
+
             stmnt.close(); conn.close();
 
         } catch (SQLException | InterruptedException | ExecutionException exc) {
@@ -445,6 +447,8 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             JOptionPane.showMessageDialog(this, "Error");
             return;
         }
+
+        btnResetActionPerformed(null);
 
 //        EventQueue.invokeLater(new Runnable() {
 //            @Override

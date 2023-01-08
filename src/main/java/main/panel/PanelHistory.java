@@ -1,5 +1,6 @@
-package main.view;
+package main.panel;
 
+import main.frame.MainUI;
 import main.utility.JDBCUtil;
 
 import java.sql.PreparedStatement;
@@ -15,12 +16,13 @@ public class PanelHistory extends javax.swing.JPanel {
     /**
      * Creates new form panelKaryawan
      */
+    private MainUI mainFrame;
     DefaultTableModel dataModel;
     public String id = "";
 
-    public PanelHistory() {
+    public PanelHistory(MainUI mainFrame) {
         initComponents();
-
+        this.mainFrame = mainFrame;
         updateTable(id);
     }
 
@@ -40,6 +42,7 @@ public class PanelHistory extends javax.swing.JPanel {
         jTable1 = new javax.swing.JTable();
         btnReset = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
+        btnLihatIdPelanggan = new javax.swing.JButton();
 
         labelId.setText("ID Pelanggan");
 
@@ -94,6 +97,13 @@ public class PanelHistory extends javax.swing.JPanel {
         jLabel1.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
         jLabel1.setText("History Pelanggan");
 
+        btnLihatIdPelanggan.setText("Lihat id pelanggan?");
+        btnLihatIdPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnLihatIdPelangganActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -111,11 +121,13 @@ public class PanelHistory extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(labelId)
                                 .addGap(49, 49, 49)
-                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnLihatIdPelanggan))
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(100, 100, 100)
                                 .addComponent(jLabel1)))
-                        .addGap(0, 71, Short.MAX_VALUE)))
+                        .addGap(0, 19, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -126,7 +138,8 @@ public class PanelHistory extends javax.swing.JPanel {
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(labelId)
-                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtId, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnLihatIdPelanggan))
                 .addGap(37, 37, 37)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnSubmit)
@@ -157,6 +170,10 @@ public class PanelHistory extends javax.swing.JPanel {
         txtId.setText("");
     }//GEN-LAST:event_btnResetActionPerformed
 
+    private void btnLihatIdPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnLihatIdPelangganActionPerformed
+        mainFrame.setPanel(new PanelPelanggan());
+    }//GEN-LAST:event_btnLihatIdPelangganActionPerformed
+
     public void updateTable(String id) {
         try {
             dataModel = (DefaultTableModel) jTable1.getModel();
@@ -178,7 +195,6 @@ public class PanelHistory extends javax.swing.JPanel {
                 res.close();
                 stat.close();
             }
-//            res.close();
         } catch (SQLException ex) {
             Logger.getLogger(PanelHistory.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -186,6 +202,7 @@ public class PanelHistory extends javax.swing.JPanel {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnLihatIdPelanggan;
     private javax.swing.JButton btnReset;
     private javax.swing.JButton btnSubmit;
     private javax.swing.JLabel jLabel1;
