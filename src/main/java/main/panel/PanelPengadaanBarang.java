@@ -4,10 +4,13 @@
  */
 package main.panel;
 
+import main.frame.MainUI;
 import main.utility.JDBCUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 
 /**
@@ -16,14 +19,50 @@ import java.sql.*;
  */
 public class PanelPengadaanBarang extends javax.swing.JPanel {
 
+    private MainUI mainFrame;
     private Connection conn;
     private PreparedStatement stmnt;
+
+    private void updateTable() {
+        try {
+            conn = JDBCUtil.getConnection();
+            stmnt = conn.prepareStatement("SELECT id, price_in, stock, time_in, barang_id FROM pengadaan_barang WHERE stock > 0;");
+            ResultSet rs = stmnt.executeQuery();
+
+            DefaultTableModel tabel = (DefaultTableModel) jTable1.getModel();
+            tabel.setRowCount(0);
+
+            while (rs.next()) {
+                int pengadaanBarangId = rs.getInt("id");
+                int priceIn = rs.getInt("price_in");
+                int stock = rs.getInt("stock");
+                int barangId = rs.getInt("barang_id");
+                Timestamp timeIn = rs.getTimestamp("time_in");
+                tabel.addRow(new Object[] {pengadaanBarangId, priceIn, stock, barangId, timeIn});
+            }
+
+            rs.close(); stmnt.close(); conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * Creates new form PanelPengadaanBarang
      */
-    public PanelPengadaanBarang() {
+
+    public PanelPengadaanBarang(MainUI mainFrame) {
         initComponents();
+        updateTable();
+        this.mainFrame = mainFrame;
+    }
+
+    public PanelPengadaanBarang(MainUI mainFrame, int id) {
+        initComponents();
+        updateTable();
+        this.mainFrame = mainFrame;
+        tfId.setText(String.valueOf(id));
+        btnCekActionPerformed(null);
     }
 
     /**
@@ -35,6 +74,8 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        menuItemJual = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -47,6 +88,16 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         textArea1 = new javax.swing.JTextArea();
         btnSimpan = new javax.swing.JButton();
         jLabel8 = new javax.swing.JLabel();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jTable1 = new javax.swing.JTable();
+
+        menuItemJual.setText("Jual");
+        menuItemJual.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemJualActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(menuItemJual);
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel1.setText("Pengadaan Barang");
@@ -56,6 +107,24 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         jLabel3.setText("Harga beli :");
 
         jLabel4.setText("Kuantitas :");
+
+        tfId.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfIdKeyTyped(evt);
+            }
+        });
+
+        tfHarga.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfHargaKeyTyped(evt);
+            }
+        });
+
+        tfKuantitas.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfKuantitasKeyTyped(evt);
+            }
+        });
 
         btnCek.setText("Cek");
         btnCek.addActionListener(new java.awt.event.ActionListener() {
@@ -79,15 +148,51 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         jLabel8.setText("(1 Juta diwakili 1000)");
         jLabel8.setPreferredSize(new java.awt.Dimension(135, 35));
 
+        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
+            },
+            new String [] {
+                "Kode barang", "Harga masuk", "Stok", "Id produk", "Waktu masuk"
+            }
+        ) {
+            boolean[] canEdit = new boolean [] {
+                false, false, false, false, false
+            };
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
+        jScrollPane2.setViewportView(jTable1);
+        if (jTable1.getColumnModel().getColumnCount() > 0) {
+            jTable1.getColumnModel().getColumn(0).setResizable(false);
+            jTable1.getColumnModel().getColumn(1).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setResizable(false);
+            jTable1.getColumnModel().getColumn(2).setPreferredWidth(50);
+            jTable1.getColumnModel().getColumn(3).setResizable(false);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(75);
+            jTable1.getColumnModel().getColumn(4).setResizable(false);
+            jTable1.getColumnModel().getColumn(4).setPreferredWidth(150);
+        }
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(16, 16, 16)
-                        .addComponent(btnSimpan))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(300, 300, 300)
                         .addComponent(jLabel1))
@@ -111,6 +216,12 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 92, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(87, 87, 87))
+            .addGroup(layout.createSequentialGroup()
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnSimpan)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 580, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -132,12 +243,13 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(14, 14, 14))
+                            .addComponent(tfKuantitas, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(35, 35, 35)
+                .addGap(34, 34, 34)
                 .addComponent(btnSimpan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(113, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -173,6 +285,12 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
     }//GEN-LAST:event_btnCekActionPerformed
 
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
+
+        if (tfId.getText().isEmpty() || tfHarga.getText().isEmpty() || tfKuantitas.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "isi form yang belum diisi");
+            return;
+        }
+
         int price = Integer.parseInt(tfHarga.getText()) * 1000;
         int quantity = Integer.parseInt(tfKuantitas.getText());
         try {
@@ -198,7 +316,7 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
             affected = stmnt.executeUpdate();
 
             if (affected < 1) {
-                JOptionPane.showMessageDialog(this, "Data barang tidak ter-update");
+                JOptionPane.showMessageDialog(this, "Data produk tidak ter-update");
             }
 
             stmnt.close(); conn.close();
@@ -208,6 +326,37 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_btnSimpanActionPerformed
 
+    private void tfIdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfIdKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfIdKeyTyped
+
+    private void tfHargaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfHargaKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfHargaKeyTyped
+
+    private void tfKuantitasKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfKuantitasKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfKuantitasKeyTyped
+
+    private void menuItemJualActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemJualActionPerformed
+        int row = jTable1.getSelectedRow();
+        int id = (int) jTable1.getValueAt(row, 0);
+        mainFrame.setPanel(new PanelPenjualanBarang(mainFrame, id));
+    }//GEN-LAST:event_menuItemJualActionPerformed
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON3) {
+            int row = jTable1.rowAtPoint(evt.getPoint());
+            jTable1.setRowSelectionInterval(row, row);
+            jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnCek;
@@ -217,7 +366,11 @@ public class PanelPengadaanBarang extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
+    private javax.swing.JTable jTable1;
+    private javax.swing.JMenuItem menuItemJual;
     private javax.swing.JTextArea textArea1;
     private javax.swing.JTextField tfHarga;
     private javax.swing.JTextField tfId;

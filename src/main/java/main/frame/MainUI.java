@@ -9,23 +9,28 @@ import main.panel.PanelPendataanBarang;
 import main.panel.PanelPengadaanBarang;
 import main.panel.PanelPenjualanBarang;
 
+import javax.swing.*;
 import java.awt.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 
 /**
  *
  * @author bryan
  */
 public class MainUI extends javax.swing.JFrame {
+    public void showJOptionToMainFrame(Object message) {
+        JOptionPane.showMessageDialog(this, message);
+    }
+
+    public void setPanel(Component component) {
+        scrollPane.setViewportView(component);
+    }
 
     /**
      * Creates new form MainUI
      */
     public MainUI() {
         initComponents();
-        scrollPane.setViewportView(new PanelPendataanBarang());
+        scrollPane.setViewportView(new PanelPendataanBarang(this));
     }
 
     /**
@@ -127,15 +132,15 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_menuRekapPengadaanActionPerformed
 
     private void menuBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBarangActionPerformed
-        scrollPane.setViewportView(new PanelPendataanBarang());
+        scrollPane.setViewportView(new PanelPendataanBarang(this));
     }//GEN-LAST:event_menuBarangActionPerformed
 
     private void menuPengadaanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPengadaanActionPerformed
-        scrollPane.setViewportView(new PanelPengadaanBarang());
+        scrollPane.setViewportView(new PanelPengadaanBarang(this));
     }//GEN-LAST:event_menuPengadaanActionPerformed
 
     private void menuPenjualanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPenjualanActionPerformed
-        scrollPane.setViewportView(new PanelPenjualanBarang());
+        scrollPane.setViewportView(new PanelPenjualanBarang(this));
     }//GEN-LAST:event_menuPenjualanActionPerformed
 
     /**

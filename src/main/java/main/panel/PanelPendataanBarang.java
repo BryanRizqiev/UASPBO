@@ -4,11 +4,13 @@
  */
 package main.panel;
 
+import main.frame.MainUI;
 import main.utility.JDBCUtil;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.sql.*;
 
 /**
@@ -17,6 +19,7 @@ import java.sql.*;
  */
 public class PanelPendataanBarang extends javax.swing.JPanel {
 
+    private MainUI mainFrame;
     private Connection conn;
     private PreparedStatement stmnt;
 
@@ -46,16 +49,17 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         }
     }
 
-    private void ShowJOptionNotInMainComponent(Object message) {
+    private void showJOptionToInMainPanel(Object message) {
         JOptionPane.showMessageDialog(this, message);
     }
 
     /**
      * Creates new form PanelPendataanBarang
      */
-    public PanelPendataanBarang() {
+    public PanelPendataanBarang(MainUI mainFrame) {
         initComponents();
         updateTable();
+        this.mainFrame = mainFrame;
     }
 
     /**
@@ -67,6 +71,9 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        jPopupMenu1 = new javax.swing.JPopupMenu();
+        menuItemAdakan = new javax.swing.JMenuItem();
+        menuItemEdit = new javax.swing.JMenuItem();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
@@ -89,13 +96,29 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         jTable1 = new javax.swing.JTable();
         btnSync = new javax.swing.JButton();
 
+        menuItemAdakan.setText("Adakan");
+        menuItemAdakan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemAdakanActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(menuItemAdakan);
+
+        menuItemEdit.setText("Lihat");
+        menuItemEdit.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuItemEditActionPerformed(evt);
+            }
+        });
+        jPopupMenu1.add(menuItemEdit);
+
         setPreferredSize(new java.awt.Dimension(600, 600));
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel1.setText("Pendataan Produk");
 
         jLabel2.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
-        jLabel2.setText("Id :");
+        jLabel2.setText("Id produk :");
 
         jLabel3.setFont(new java.awt.Font("Liberation Sans", 0, 15)); // NOI18N
         jLabel3.setText("Merek :");
@@ -114,23 +137,20 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfIdKeyPressed(evt);
             }
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                tfIdKeyTyped(evt);
+            }
         });
 
         tfMerek.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfMerekKeyPressed(evt);
             }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfMerekKeyTyped(evt);
-            }
         });
 
         tfTipenVarian.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfTipenVarianKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfTipenVarianKeyTyped(evt);
             }
         });
 
@@ -164,9 +184,6 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
         tfWarna.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
                 tfWarnaKeyPressed(evt);
-            }
-            public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfWarnaKeyTyped(evt);
             }
         });
 
@@ -214,7 +231,13 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 return canEdit [columnIndex];
             }
         });
+        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jTable1.getTableHeader().setReorderingAllowed(false);
+        jTable1.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jTable1MouseClicked(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTable1);
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(50);
@@ -268,16 +291,17 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                                         .addGap(18, 18, 18)
                                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                             .addGroup(layout.createSequentialGroup()
+                                                .addGap(31, 31, 31)
                                                 .addComponent(jLabel5)
-                                                .addGap(18, 18, 18)
+                                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                                 .addComponent(labelStok))
                                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 136, javax.swing.GroupLayout.PREFERRED_SIZE)))))))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(321, 321, 321)
-                        .addComponent(jLabel1))
-                    .addGroup(layout.createSequentialGroup()
                         .addContainerGap()
-                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 530, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(200, 200, 200)
+                        .addComponent(jLabel1)))
                 .addContainerGap(64, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
@@ -285,7 +309,7 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
             .addGroup(layout.createSequentialGroup()
                 .addGap(18, 18, 18)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(24, 24, 24)
+                .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -387,7 +411,7 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                     tfMerek.setText(rs.getString("brand"));
                     tfTipenVarian.setText(rs.getString("type_and_variant"));
                     tfWarna.setText(rs.getString("color"));
-                    tfHarga.setText(String.valueOf(rs.getInt("price_out")));
+                    tfHarga.setText(String.valueOf(rs.getInt("price_out") / 1000));
                 } else {
                     JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
                 }
@@ -399,33 +423,80 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 JOptionPane.showMessageDialog(this, "Error");
             }
         } else if (combBox1.getSelectedItem().equals("Hapus")) {
-            System.out.println("Hapus");
-        }
 
+            if (tfId.getText().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Form id harus diisi");
+                return;
+            }
+
+            try {
+                conn = JDBCUtil.getConnection();
+                stmnt = conn.prepareStatement("DELETE FROM barang WHERE id = ?;");
+                stmnt.setInt(1, Integer.parseInt(tfId.getText()));
+                int affected = stmnt.executeUpdate();
+
+                stmnt.close(); conn.close();
+
+                if (affected < 0) {
+                    JOptionPane.showMessageDialog(this, "Data tidak ter-uptdate");
+                    return;
+                }
+
+                JOptionPane.showMessageDialog(this, "Data ter-hapus");
+
+                updateTable();
+            } catch (SQLException exc) {
+                exc.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Error");
+            }
+        }
     }//GEN-LAST:event_combBox1ActionPerformed
 
     private void btnUpdateActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateActionPerformed
-        // TODO add your handling code here:
+        String brand = tfMerek.getText();
+
+        if (brand.isEmpty() || tfId.getText().isEmpty() || tfTipenVarian.getText().isEmpty() || tfWarna.getText().isEmpty() || tfHarga.getText().isEmpty() ) {
+            JOptionPane.showMessageDialog(this, "5 Form diatas harus diisi");
+            return;
+        }
+
+        String uniqueName = (brand + tfTipenVarian.getText() + tfWarna.getText()).toLowerCase();
+
+        try {
+            conn = JDBCUtil.getConnection();
+            stmnt = conn.prepareStatement("UPDATE barang SET unique_name =  ?, brand = ?, type_and_variant = ?, color = ?, price_out = ? WHERE id = ?");
+            stmnt.setString(1, uniqueName);
+            stmnt.setString(2, brand);
+            stmnt.setString(3, tfTipenVarian.getText());
+            stmnt.setString(4, tfWarna.getText());
+            stmnt.setInt(5, Integer.parseInt(tfHarga.getText()) * 1000);
+            stmnt.setInt(6, Integer.parseInt(tfId.getText()));
+            int affected = stmnt.executeUpdate();
+
+            stmnt.close(); conn.close();
+
+            if (affected < 0) {
+                JOptionPane.showMessageDialog(this, "Data tidak ter-uptdate");
+                return;
+            }
+
+            JOptionPane.showMessageDialog(this, "Data ter-update");
+
+            updateTable();
+        } catch (SQLException exc) {
+            exc.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error");
+        }
     }//GEN-LAST:event_btnUpdateActionPerformed
 
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
         tfId.setText(""); tfMerek.setText(""); tfTipenVarian.setText(""); tfWarna.setText(""); tfHarga.setText(""); labelStok.setText("");
     }//GEN-LAST:event_btnResetActionPerformed
 
-    private void tfMerekKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMerekKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfMerekKeyTyped
-
-    private void tfTipenVarianKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfTipenVarianKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfTipenVarianKeyTyped
-
-    private void tfWarnaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfWarnaKeyTyped
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tfWarnaKeyTyped
-
     private void tfHargaKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfHargaKeyTyped
-        // TODO add your handling code here:
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
     }//GEN-LAST:event_tfHargaKeyTyped
 
     private void tfMerekKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfMerekKeyPressed
@@ -488,11 +559,11 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                 Thread.sleep(5000L);
                 conn = JDBCUtil.getConnection();
                 stmnt = conn.prepareStatement("UPDATE barang brg SET stock = " +
-                        "(SELECT SUM(stock) FROM pengadaan_barang WHERE barang_id = brg.id);");
+                        "(SELECT IFNULL(SUM(stock), 0) FROM pengadaan_barang WHERE barang_id = brg.id);");
                 int affected = stmnt.executeUpdate();
                 // kurang guna karena query atas pasti update
                 if (affected < 1) {
-                    ShowJOptionNotInMainComponent("Data tidak ada yang update");
+                    mainFrame.showJOptionToMainFrame("Data tidak ada yang update");
                 }
 
                 stmnt.close(); conn.close();
@@ -508,9 +579,11 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
                     bStatus = get();
                 } catch (Exception exc) {
                     exc.printStackTrace();
-                    ShowJOptionNotInMainComponent("Error");
+                    showJOptionToInMainPanel("Error");
                 }
-                ShowJOptionNotInMainComponent("Data berhasil ter-update");
+                System.out.println("Is ok? " + bStatus);
+                mainFrame.showJOptionToMainFrame("Data berhasil ter-update");
+//                showJOptionToInMainPanel("Data berhasil ter-update");
                 btnSync.setEnabled(true);
                 btnSync.setBorderPainted(true);
                 btnSync.setFocusPainted(true);
@@ -520,6 +593,38 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
 
         worker.execute();
     }//GEN-LAST:event_btnSyncActionPerformed
+
+    private void tfIdKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfIdKeyTyped
+        if (!Character.isDigit(evt.getKeyChar())) {
+            evt.consume();
+        }
+    }//GEN-LAST:event_tfIdKeyTyped
+
+    private void jTable1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jTable1MouseClicked
+        if (evt.getButton() == MouseEvent.BUTTON3) {
+            int row = jTable1.rowAtPoint(evt.getPoint());
+            jTable1.setRowSelectionInterval(row, row);
+            jPopupMenu1.show(evt.getComponent(), evt.getX(), evt.getY());
+        }
+    }//GEN-LAST:event_jTable1MouseClicked
+
+    private void menuItemAdakanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemAdakanActionPerformed
+        int row = jTable1.getSelectedRow();
+        int id = (int) jTable1.getValueAt(row, 0);
+        mainFrame.setPanel(new PanelPengadaanBarang(mainFrame, id));
+    }//GEN-LAST:event_menuItemAdakanActionPerformed
+
+    private void menuItemEditActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuItemEditActionPerformed
+        int row = jTable1.getSelectedRow();
+
+        int id = (int) jTable1.getValueAt(row, 0);
+        String brand = (String) jTable1.getValueAt(row, 1);
+        String typeNVariant = (String) jTable1.getValueAt(row, 2);
+        String color = (String) jTable1.getValueAt(row, 3);
+        int harga = (int) jTable1.getValueAt(row, 5);
+
+        tfId.setText(String.valueOf(id)); tfMerek.setText(brand); tfTipenVarian.setText(typeNVariant); tfWarna.setText(color); tfHarga.setText(String.valueOf(harga / 1000));
+    }//GEN-LAST:event_menuItemEditActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -536,9 +641,12 @@ public class PanelPendataanBarang extends javax.swing.JPanel {
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JPopupMenu jPopupMenu1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
     private javax.swing.JLabel labelStok;
+    private javax.swing.JMenuItem menuItemAdakan;
+    private javax.swing.JMenuItem menuItemEdit;
     private javax.swing.JTextField tfHarga;
     private javax.swing.JTextField tfId;
     private javax.swing.JTextField tfMerek;

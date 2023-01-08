@@ -4,10 +4,10 @@
  */
 package main.panel;
 
+import main.frame.MainUI;
 import main.utility.JDBCUtil;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.sql.*;
 import java.util.concurrent.CompletableFuture;
@@ -19,14 +19,15 @@ import java.util.concurrent.ExecutionException;
  */
 public class PanelPenjualanBarang extends javax.swing.JPanel {
 
+    private MainUI mainFrame;
     private Connection conn;
     private PreparedStatement stmnt;
-    private int price, total, totalPrice, money, back, pengadaanBarangId, karyawanId, pelangganId, pengadaanBarangStock;
+    private int price, total, totalPrice, money, back, barangId, pengadaanBarangId, karyawanId, pelangganId, pengadaanBarangStock;
     private String brand, typenVariant, color, namaKaryawan, namaPelanggan;
     private Timestamp time_in, time_out;
 
     private final String GET_BARANG_AND_PENGADAAN_BARANG =
-            "SELECT brg.brand, brg.type_and_variant, brg.color, brg.price_out, pngdn_brg.id AS id, pngdn_brg.stock, pngdn_brg.time_in " +
+            "SELECT brg.brand, brg.type_and_variant, brg.color, brg.price_out, pngdn_brg.id AS id, pngdn_brg.stock, pngdn_brg.time_in, pngdn_brg.barang_id " +
             "FROM pengadaan_barang pngdn_brg " +
             "INNER JOIN barang brg " +
             "ON pngdn_brg.barang_id = brg.id " +
@@ -41,8 +42,16 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
     /**
      * Creates new form PanelPenjualanBarang
      */
-    public PanelPenjualanBarang() {
+    public PanelPenjualanBarang(MainUI mainFrame) {
         initComponents();
+        this.mainFrame = mainFrame;
+    }
+
+    public PanelPenjualanBarang(MainUI mainFrame, int id) {
+        initComponents();
+        this.mainFrame = mainFrame;
+        tfId.setText(String.valueOf(id));
+        btnCekActionPerformed(null);
     }
 
     /**
@@ -72,15 +81,16 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         jLabel7 = new javax.swing.JLabel();
         tfIdKaryawan = new javax.swing.JTextField();
         btnCekKaryawan = new javax.swing.JButton();
-        tfPelanggan = new javax.swing.JTextField();
+        tfIdPelanggan = new javax.swing.JTextField();
         btnCekPelanggan = new javax.swing.JButton();
+        btnBelumInpPelanggan = new javax.swing.JButton();
 
         setPreferredSize(new java.awt.Dimension(750, 300));
 
         jLabel1.setFont(new java.awt.Font("Liberation Sans", 1, 18)); // NOI18N
         jLabel1.setText("Penjualan Barang");
 
-        jLabel2.setText("Id barang :");
+        jLabel2.setText("Kode barang :");
 
         tfId.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -88,7 +98,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             }
         });
 
-        btnCek.setText("Cek");
+        btnCek.setText("Set");
         btnCek.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCekActionPerformed(evt);
@@ -148,23 +158,30 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             }
         });
 
-        btnCekKaryawan.setText("Cek");
+        btnCekKaryawan.setText("Set");
         btnCekKaryawan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCekKaryawanActionPerformed(evt);
             }
         });
 
-        tfPelanggan.addKeyListener(new java.awt.event.KeyAdapter() {
+        tfIdPelanggan.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
-                tfPelangganKeyTyped(evt);
+                tfIdPelangganKeyTyped(evt);
             }
         });
 
-        btnCekPelanggan.setText("Cek");
+        btnCekPelanggan.setText("Set");
         btnCekPelanggan.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btnCekPelangganActionPerformed(evt);
+            }
+        });
+
+        btnBelumInpPelanggan.setText("Belum input pelanggan?");
+        btnBelumInpPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnBelumInpPelangganActionPerformed(evt);
             }
         });
 
@@ -176,60 +193,60 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGap(250, 250, 250)
-                        .addComponent(jLabel1))
+                        .addComponent(jLabel1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnBelumInpPelanggan))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(169, 169, 169)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(tfJumlahBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
-                                .addComponent(tfPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(btnCekPelanggan))
-                            .addComponent(tfUangPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tfKembalian, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(jLabel5)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                                .addGap(169, 169, 169)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(tfJumlahBarang, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tfUangPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(tfKembalian, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(layout.createSequentialGroup()
+                                .addContainerGap()
+                                .addComponent(jLabel5)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
+                .addContainerGap())
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel7)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2)
-                                    .addComponent(jLabel6))
-                                .addGap(78, 78, 78)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tfIdKaryawan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnCekKaryawan))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(tfId, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(btnCek)))))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 64, Short.MAX_VALUE)
+                            .addComponent(jLabel2)
+                            .addComponent(jLabel6)
+                            .addComponent(jLabel7))
+                        .addGap(73, 73, 73)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(tfIdKaryawan)
+                            .addComponent(tfId)
+                            .addComponent(tfIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(18, 18, 18)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(btnCekKaryawan)
+                            .addComponent(btnCek)
+                            .addComponent(btnCekPelanggan))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 63, Short.MAX_VALUE)
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(52, 52, 52))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(btnSimpan)
-                        .addGap(18, 18, 18)
-                        .addComponent(btnReset)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(layout.createSequentialGroup()
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(jLabel4)
-                            .addComponent(jLabel3))
+                            .addComponent(jLabel3)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(btnSimpan)
+                                .addGap(18, 18, 18)
+                                .addComponent(btnReset)))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnBelumInpPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -243,10 +260,10 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
                             .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(tfIdKaryawan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCekKaryawan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(18, 22, Short.MAX_VALUE)
+                        .addGap(18, 18, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(tfPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(tfIdPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(btnCekPelanggan, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addGap(18, 18, 18)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
@@ -271,36 +288,42 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
     // cek barang
     private void btnCekActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekActionPerformed
         if (tfId.getText().isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Form id harus diisi");
+            JOptionPane.showMessageDialog(this, "Form kode barang harus diisi");
             return;
         }
+
+        tfId.setEnabled(false);
+        btnCek.setText("Cek");
 
         try {
             conn = JDBCUtil.getConnection();
             stmnt = conn.prepareStatement(GET_BARANG_AND_PENGADAAN_BARANG);
             stmnt.setInt(1, Integer.parseInt(tfId.getText()));
             ResultSet rs = stmnt.executeQuery();
-
             if (rs.next()) {
+                barangId = rs.getInt("barang_id");
                 pengadaanBarangId = rs.getInt("id");
                 brand = rs.getString("brand");
                 typenVariant = rs.getString("type_and_variant");
                 color = rs.getString("color");
                 price = rs.getInt("price_out");
                 time_in = rs.getTimestamp("time_in");
-
                 pengadaanBarangStock = rs.getInt("stock");
+
                 String status = (pengadaanBarangStock < 1) ? "Barang dengan id " + pengadaanBarangId + "\n \t  tidak tersedia" : "Barang dengan id " + pengadaanBarangId + "\n \t  tersedia sebanyak "  + pengadaanBarangStock + " barang";
                 String data = "\n Merek\t: " + brand +
                         "\n Tipe & varian\t: " + typenVariant +
                         "\n Warna\t: " + color +
                         "\n Harga jual\t: " + price +
                         "\n Status\t: " + status;
+
                 textArea1.setText(data);
                 tfJumlahBarang.setEditable(true);
                 tfUangPelanggan.setEditable(true);
             } else {
                 JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
+                tfId.setEnabled(true);
+                btnCek.setText("Set");
             }
 
             rs.close(); stmnt.close(); conn.close();
@@ -313,19 +336,18 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
     // simpan
     private void btnSimpanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSimpanActionPerformed
-        // kurang banyak validasi
-        if (pengadaanBarangStock < total) {
-            JOptionPane.showMessageDialog(this, "Barang dengan id " + pengadaanBarangId  + " tidak tersedia");
-            return;
-        }
-
         if (tfKembalian.getText().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Harap tekan enter pada form uang pelanggan");
             return;
         }
 
-        if (pengadaanBarangId == 0 || karyawanId == 0 || pelangganId == 0) {
+        if (barangId == 0 || pengadaanBarangId == 0 || karyawanId == 0 || pelangganId == 0) {
             JOptionPane.showMessageDialog(this, "Harap cek barang terlebih dulu");
+            return;
+        }
+
+        if (pengadaanBarangStock < total) {
+            JOptionPane.showMessageDialog(this, "Barang dengan id " + pengadaanBarangId  + " tidak tersedia");
             return;
         }
 
@@ -339,11 +361,26 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         System.out.println("Start sync");
 
         CompletableFuture<Integer> futurePengadaanBarang = CompletableFuture.supplyAsync(() -> {
-            try{
+            try {
                 conn = JDBCUtil.getConnection();
                 stmnt = conn.prepareStatement("UPDATE pengadaan_barang SET stock = stock - ? WHERE id = ?;");
                 stmnt.setInt(1, total);
                 stmnt.setInt(2, pengadaanBarangId);
+                int affected = stmnt.executeUpdate();
+                stmnt.close(); conn.close();
+                return affected;
+            } catch(SQLException exc) {
+                exc.printStackTrace();
+            }
+            return null;
+        });
+
+        CompletableFuture<Integer> futureBarang = CompletableFuture.supplyAsync(() -> {
+            try {
+                conn = JDBCUtil.getConnection();
+                stmnt = conn.prepareStatement("UPDATE barang SET stock = stock - ? WHERE id = ?;");
+                stmnt.setInt(1, total);
+                stmnt.setInt(2, barangId);
                 int affected = stmnt.executeUpdate();
                 stmnt.close(); conn.close();
                 return affected;
@@ -385,14 +422,20 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             stmnt.setInt(15, pelangganId);
             int affected = stmnt.executeUpdate();
             int pengadaanBarangAffected = futurePengadaanBarang.get();
-            System.out.println("Result async: " + pengadaanBarangAffected);
+            int barangAffected = futureBarang.get();
+            System.out.println("Result async1: " + pengadaanBarangAffected);
+            System.out.println("Result async2: " + barangAffected);
 
             if (affected < 0) {
                 JOptionPane.showMessageDialog(this, "Data penjualan tidak ter-insert");
             }
 
             if (pengadaanBarangAffected < 0) {
-                JOptionPane.showMessageDialog(this, "Data pengadaan tidak ter-insert");
+                JOptionPane.showMessageDialog(this, "Data pengadaan tidak ter-update");
+            }
+
+            if (barangAffected < 0) {
+                JOptionPane.showMessageDialog(this, "Data produk tidak ter-update");
             }
 
             stmnt.close(); conn.close();
@@ -403,12 +446,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
             return;
         }
 
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new Popup().setVisible(true);
-            }
-        });
+//        EventQueue.invokeLater(new Runnable() {
+//            @Override
+//            public void run() {
+//                new Popup().setVisible(true);
+//            }
+//        });
     }//GEN-LAST:event_btnSimpanActionPerformed
 
     private void tfUangPelangganKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfUangPelangganKeyTyped
@@ -437,27 +480,42 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
     // reset
     private void btnResetActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnResetActionPerformed
-
+        tfId.setText(""); tfId.setEnabled(true);
+        tfIdPelanggan.setText(""); tfIdPelanggan.setEnabled(true);
+        tfIdKaryawan.setText(""); tfIdKaryawan.setEnabled(true);
+        btnCek.setText("Set"); btnCekKaryawan.setText("Set"); btnCekPelanggan.setText("Set");
+        tfJumlahBarang.setText(""); tfUangPelanggan.setText(""); tfKembalian.setText("");
     }//GEN-LAST:event_btnResetActionPerformed
 
     // cek karyawan
     private void btnCekKaryawanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekKaryawanActionPerformed
+        if (tfIdKaryawan.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Form id karyawan harus diisi");
+            return;
+        }
+
+        tfIdKaryawan.setEnabled(false);
+        btnCekKaryawan.setText("Cek");
+
         try {
             conn = JDBCUtil.getConnection();
             stmnt = conn.prepareStatement(GET_KARYAWAN_BY_ID);
             stmnt.setInt(1, Integer.parseInt(tfIdKaryawan.getText()));
             ResultSet rs = stmnt.executeQuery();
-
             if (rs.next()) {
                 karyawanId = rs.getInt("id");
                 namaKaryawan = rs.getString("nama");
+
                 String data = "\n Nama\t: " +  namaKaryawan +
                         "\n Jabatan\t: " + rs.getString("jabatan") +
                         "\n Alamat\t: " + rs.getString("alamat") +
                         "\n No. Telepon\t: " + rs.getString("no_telepon");
+
                 textArea1.setText(data);
             } else {
                 JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
+                tfIdKaryawan.setEnabled(true);
+                btnCekKaryawan.setText("Set");
             }
 
             rs.close(); stmnt.close(); conn.close();
@@ -470,21 +528,32 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
 
     // cek pelanggan
     private void btnCekPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCekPelangganActionPerformed
+        if (tfIdPelanggan.getText().isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Form id pelanggan harus diisi");
+            return;
+        }
+
+        tfIdPelanggan.setEnabled(false);
+        btnCekPelanggan.setText("Cek");
+
         try {
             conn = JDBCUtil.getConnection();
             stmnt = conn.prepareStatement(GET_PELANGGAN_BY_ID);
-            stmnt.setInt(1, Integer.parseInt(tfPelanggan.getText()));
+            stmnt.setInt(1, Integer.parseInt(tfIdPelanggan.getText()));
             ResultSet rs = stmnt.executeQuery();
-
             if (rs.next()) {
                 pelangganId = rs.getInt("id");
                 namaPelanggan = rs.getString("nama");
+
                 String data = "\n Nama\t: " +  namaPelanggan +
                         "\n Alamat\t: " + rs.getString("alamat") +
                         "\n No. Telepon\t: " + rs.getString("no_telepon");
+
                 textArea1.setText(data);
             } else {
                 JOptionPane.showMessageDialog(this, "Data tidak ditemukan");
+                tfIdPelanggan.setEnabled(true);
+                btnCekPelanggan.setText("Set");
             }
 
             rs.close(); stmnt.close(); conn.close();
@@ -501,11 +570,11 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tfIdKaryawanKeyTyped
 
-    private void tfPelangganKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfPelangganKeyTyped
+    private void tfIdPelangganKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfIdPelangganKeyTyped
         if (!Character.isDigit(evt.getKeyChar())) {
             evt.consume();
         }
-    }//GEN-LAST:event_tfPelangganKeyTyped
+    }//GEN-LAST:event_tfIdPelangganKeyTyped
 
     private void tfJumlahBarangKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_tfJumlahBarangKeyTyped
         if (!Character.isDigit(evt.getKeyChar())) {
@@ -519,8 +588,12 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
         }
     }//GEN-LAST:event_tfIdKeyTyped
 
+    private void btnBelumInpPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBelumInpPelangganActionPerformed
+        mainFrame.setPanel(new PanelPengadaanBarang(mainFrame));
+    }//GEN-LAST:event_btnBelumInpPelangganActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnBelumInpPelanggan;
     private javax.swing.JButton btnCek;
     private javax.swing.JButton btnCekKaryawan;
     private javax.swing.JButton btnCekPelanggan;
@@ -537,9 +610,9 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
     private javax.swing.JTextArea textArea1;
     private javax.swing.JTextField tfId;
     private javax.swing.JTextField tfIdKaryawan;
+    private javax.swing.JTextField tfIdPelanggan;
     private javax.swing.JTextField tfJumlahBarang;
     private javax.swing.JTextField tfKembalian;
-    private javax.swing.JTextField tfPelanggan;
     private javax.swing.JTextField tfUangPelanggan;
     // End of variables declaration//GEN-END:variables
 }
