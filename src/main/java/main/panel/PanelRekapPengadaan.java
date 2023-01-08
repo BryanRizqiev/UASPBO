@@ -37,20 +37,20 @@ public class PanelRekapPengadaan extends javax.swing.JPanel {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null},
-                {null, null, null, null, null, null}
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null},
+                {null, null, null, null, null, null, null, null}
             },
             new String [] {
-                "ID", "Harga Masuk", "Total Harga Masuk", "Jumlah Barang", "ID Barang", "Waktu"
+                "ID", "Harga Masuk", "Jumlah Barang", "Total Harga Masuk", "Merek", "Tipe dan Varian", "Warna", "Waktu"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false, false, false
+                false, false, false, false, false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -66,9 +66,9 @@ public class PanelRekapPengadaan extends javax.swing.JPanel {
         if (jTable1.getColumnModel().getColumnCount() > 0) {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(30);
             jTable1.getColumnModel().getColumn(1).setPreferredWidth(100);
-            jTable1.getColumnModel().getColumn(2).setPreferredWidth(120);
+            jTable1.getColumnModel().getColumn(3).setPreferredWidth(120);
             jTable1.getColumnModel().getColumn(4).setPreferredWidth(70);
-            jTable1.getColumnModel().getColumn(5).setPreferredWidth(130);
+            jTable1.getColumnModel().getColumn(7).setPreferredWidth(130);
         }
 
         jLabel1.setFont(new java.awt.Font("Inter", 1, 24)); // NOI18N
@@ -104,11 +104,14 @@ public class PanelRekapPengadaan extends javax.swing.JPanel {
             dataModel = (DefaultTableModel) jTable1.getModel();
             dataModel.setRowCount(0);
 
-            String sql = "SELECT * FROM pengadaan_barang";
+            String sql = "SELECT pngdn.id, pngdn.price_in, pngdn.quantity_in, pngdn.total_price, pngdn.time_in, brg.brand, brg.type_and_variant, brg.color " +
+                    "FROM pengadaan_barang pngdn " +
+                    "INNER JOIN barang brg " +
+                    "ON brg.id = pngdn.barang_id;";
             PreparedStatement stat = JDBCUtil.getConnection().prepareStatement(sql);
             ResultSet res = stat.executeQuery();
             while (res.next()) {
-                dataModel.addRow(new Object[]{res.getInt("id"), res.getString("price_in"), res.getString("total_price"), res.getString("quantity_in"), res.getString("barang_id"), res.getString("time_in")});
+                dataModel.addRow(new Object[]{res.getInt("id"), res.getString("price_in"), res.getString("quantity_in"), res.getString("total_price"), res.getString("brand"), res.getString("type_and_variant"), res.getString("color"), res.getString("time_in")});
             }
             res.close();
             stat.close();
