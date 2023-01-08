@@ -33,15 +33,7 @@ public class Karyawan_UI extends javax.swing.JPanel {
     
     private void TampilData(){
         DefaultTableModel model = (DefaultTableModel) tabelKaryawan.getModel();
-//        model.addColumn("NO ID.");
-//        model.addColumn("Nama Karyawan");
-//        model.addColumn("Jabatan");
-//        model.addColumn("Jenis Kelamin");
-//        model.addColumn("Alamat");
-//        model.addColumn("No Telephone");
-//        model.addColumn("E-mail");
         String cariitem = txt_cari.getText();
-        
       
         try{
             String sql = "SELECT * FROM karyawan";
@@ -54,6 +46,8 @@ public class Karyawan_UI extends javax.swing.JPanel {
             }
 
             tabelKaryawan.setModel((TableModel) model);
+
+            res.close(); stm.close(); conn.close();
         }catch(SQLException e){
             System.out.println("Error : "+ e.getMessage());
         }
@@ -349,6 +343,8 @@ public class Karyawan_UI extends javax.swing.JPanel {
             kosong();
             JOptionPane.showMessageDialog(this,"Proses Simpan Data Berhasil..");
             txt_nama.requestFocus();
+
+            pstm.close(); conn.close();
         }catch(HeadlessException | SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -385,6 +381,8 @@ public class Karyawan_UI extends javax.swing.JPanel {
             pstm.setString(6, jenis);
             pstm.execute();
             JOptionPane.showMessageDialog(this,"Edit Data Berhasil..");
+
+            pstm.close(); conn.close();
         }catch(HeadlessException | SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
@@ -430,12 +428,14 @@ public class Karyawan_UI extends javax.swing.JPanel {
           java.sql.PreparedStatement pstm = conn.prepareStatement(sql);
           
           pstm.execute();
+
+          pstm.close(); conn.close();
           JOptionPane.showMessageDialog(this,"Hapus Data Berhasil..");
         }catch(HeadlessException | SQLException e){
             JOptionPane.showMessageDialog(this, e.getMessage());
         }
         TampilData();
-         kosong();
+        kosong();
         }
         
        

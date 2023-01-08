@@ -589,7 +589,7 @@ public class PanelPenjualanBarang extends javax.swing.JPanel {
     }//GEN-LAST:event_tfIdKeyTyped
 
     private void btnBelumInpPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBelumInpPelangganActionPerformed
-        mainFrame.setPanel(new PanelPengadaanBarang(mainFrame));
+        mainFrame.setPanel(new PanelPelanggan());
     }//GEN-LAST:event_btnBelumInpPelangganActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

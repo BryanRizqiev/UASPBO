@@ -4,10 +4,8 @@
  */
 package main.frame;
 
-import main.panel.Karyawan_UI;
-import main.panel.PanelPendataanBarang;
-import main.panel.PanelPengadaanBarang;
-import main.panel.PanelPenjualanBarang;
+import main.panel.*;
+import main.view.PanelHistory;
 
 import javax.swing.*;
 import java.awt.*;
@@ -72,6 +70,11 @@ public class MainUI extends javax.swing.JFrame {
         jMenu2.add(menuBarang);
 
         menuPelanggan.setText("Pelanggan");
+        menuPelanggan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuPelangganActionPerformed(evt);
+            }
+        });
         jMenu2.add(menuPelanggan);
 
         menuKaryawan.setText("Karyawan");
@@ -111,9 +114,19 @@ public class MainUI extends javax.swing.JFrame {
         jMenu1.add(menuRekapPengadaan);
 
         menuRekapPenjualan.setText("Rekap penjualan");
+        menuRekapPenjualan.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuRekapPenjualanActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuRekapPenjualan);
 
         menuHistori.setText("Histori pelanggan");
+        menuHistori.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                menuHistoriActionPerformed(evt);
+            }
+        });
         jMenu1.add(menuHistori);
 
         jMenuBar1.add(jMenu1);
@@ -128,7 +141,7 @@ public class MainUI extends javax.swing.JFrame {
     }//GEN-LAST:event_menuKaryawanActionPerformed
 
     private void menuRekapPengadaanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRekapPengadaanActionPerformed
-        // TODO add your handling code here:
+        scrollPane.setViewportView(new PanelRekapPengadaan());
     }//GEN-LAST:event_menuRekapPengadaanActionPerformed
 
     private void menuBarangActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuBarangActionPerformed
@@ -142,6 +155,18 @@ public class MainUI extends javax.swing.JFrame {
     private void menuPenjualanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPenjualanActionPerformed
         scrollPane.setViewportView(new PanelPenjualanBarang(this));
     }//GEN-LAST:event_menuPenjualanActionPerformed
+
+    private void menuPelangganActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuPelangganActionPerformed
+        scrollPane.setViewportView(new PanelPelanggan());
+    }//GEN-LAST:event_menuPelangganActionPerformed
+
+    private void menuRekapPenjualanActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuRekapPenjualanActionPerformed
+        scrollPane.setViewportView(new PanelRekapPenjualanBarang());
+    }//GEN-LAST:event_menuRekapPenjualanActionPerformed
+
+    private void menuHistoriActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_menuHistoriActionPerformed
+        scrollPane.setViewportView(new PanelHistory());
+    }//GEN-LAST:event_menuHistoriActionPerformed
 
     /**
      * @param args the command line arguments
